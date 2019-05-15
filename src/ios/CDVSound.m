@@ -27,12 +27,14 @@
 
 @implementation CDVSound
 
-BOOL keepAvAudioSessionAlwaysActive = NO;
+BOOL keepAvAudioSessionAlwaysActive = YES;
 
 @synthesize soundCache, avSession, currMediaId, statusCallbackId;
 
 -(void) pluginInitialize
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAudioSessionEvent:) name:AVAudioSessionInterruptionNotification object:nil];
+
     NSDictionary* settings = self.commandDelegate.settings;
     keepAvAudioSessionAlwaysActive = [[settings objectForKey:[@"KeepAVAudioSessionAlwaysActive" lowercaseString]] boolValue];
     if (keepAvAudioSessionAlwaysActive) {
@@ -42,6 +44,30 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
                 NSLog(@"Unable to activate session: %@", [error localizedFailureReason]);
             }
         }
+    }
+}
+
+- (void)onAudioSessionEvent:(NSNotification*)notification
+{
+    //Check the type of notification, especially if you are sending multiple AVAudioSession events here
+    if ([notification.name isEqualToString:AVAudioSessionInterruptionNotification]) {
+        NSLog(@"Interruption notification received!");
+
+
+        if ([notification.userInfo[AVAudioSessionInterruptionOptionKey] intValue] == AVAudioSessionInterruptionOptionShouldResume) {
+            NSLog(@"Interruption ended, should resume!");
+
+            [avPlayer play];
+        }
+        //Check to see if it was a Begin interruption
+        // if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
+        //     NSLog(@"Interruption began!");
+
+        // } else {
+        //     NSLog(@"Interruption ended!");
+
+        //     [avPlayer play];
+        // }
     }
 }
 
@@ -265,11 +291,11 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
             // Pass the AVPlayerItem to a new player
             avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
 
-            // Avoid excessive buffering so streaming media can play instantly on iOS
-            // Removes preplay delay on ios 10+, makes consistent with ios9 behaviour
-            if ([NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10,0,0}]) {
-                avPlayer.automaticallyWaitsToMinimizeStalling = NO;
-            }
+            NSLog(@"slow fix");
+
+            avPlayer.automaticallyWaitsToMinimizeStalling = NO;
+
+            //avPlayer = [[AVPlayer alloc] initWithURL:resourceUrl];
         }
 
         self.currMediaId = mediaId;
@@ -839,7 +865,7 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 {
     /* https://issues.apache.org/jira/browse/CB-11513 */
     NSMutableArray* keysToRemove = [[NSMutableArray alloc] init];
-    
+
     for(id key in [self soundCache]) {
         CDVAudioFile* audioFile = [[self soundCache] objectForKey:key];
         if (audioFile != nil) {
@@ -851,9 +877,9 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
             }
         }
     }
-    
+
     [[self soundCache] removeObjectsForKeys:keysToRemove];
-    
+
     // [[self soundCache] removeAllObjects];
     // [self setSoundCache:nil];
     [self setAvSession:nil];
@@ -864,6 +890,8 @@ BOOL keepAvAudioSessionAlwaysActive = NO;
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVAudioSessionInterruptionNotification object:nil];
+
     [[self soundCache] removeAllObjects];
 }
 
