@@ -69,7 +69,7 @@ id="cordova-plugin-media"
       <preference name="KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE" default="NO" />
         <config-file target="config.xml" parent="/*">
             <feature name="Media">
-                <param name="ios-package" value="CDVSound" />
+                <param name="ios-package" value="CDVSoundHandler" />
             </feature>
             <preference
               name="KeepAVAudioSessionAlwaysActive"
@@ -77,6 +77,8 @@ id="cordova-plugin-media"
         </config-file>
         <header-file src="src/ios/CDVSound.h" />
         <source-file src="src/ios/CDVSound.m" />
+        <header-file src="src/ios/CDVSoundHandler.h" />
+        <source-file src="src/ios/CDVSoundHandler.m" />
     </platform>
 
     <!-- windows -->
