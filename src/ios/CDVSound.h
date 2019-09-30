@@ -47,6 +47,12 @@ enum CDVMediaMsg {
 };
 typedef NSUInteger CDVMediaMsg;
 
+enum CDVMediaAudioInterruption {
+    AUDIO_INTERRUPTION_BEGAN = 20,
+    AUDIO_INTERRUPTION_ENDED = 30
+};
+typedef NSUInteger CDVMediaAudioInterruption;
+
 @interface CDVAudioPlayer : AVAudioPlayer
 {
     NSString* mediaId;

@@ -110,6 +110,11 @@ Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
 Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
 
+// Audio interruption
+Media.AUDIO_INTERRUPTION = 10;
+Media.AUDIO_INTERRUPTION_BEGAN = 20;
+Media.ADUIO_INTERRUPTION_ENDED = 30;
+
 /**
  * Start or resume playing audio file.
  */

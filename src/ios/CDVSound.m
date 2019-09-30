@@ -54,20 +54,26 @@ BOOL keepAvAudioSessionAlwaysActive = YES;
         NSLog(@"Interruption notification received!");
 
 
-        if ([notification.userInfo[AVAudioSessionInterruptionOptionKey] intValue] == AVAudioSessionInterruptionOptionShouldResume) {
+        /*if ([notification.userInfo[AVAudioSessionInterruptionOptionKey] intValue] == AVAudioSessionInterruptionOptionShouldResume) {
             NSLog(@"Interruption ended, should resume!");
 
             [avPlayer play];
-        }
+        }*/
         //Check to see if it was a Begin interruption
-        // if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
-        //     NSLog(@"Interruption began!");
-
-        // } else {
-        //     NSLog(@"Interruption ended!");
-
-        //     [avPlayer play];
-        // }
+        if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
+            NSLog(@"Interruption began!");
+            
+            if (self.currMediaId) {
+                [self onStatus:MEDIA_STATE mediaId:self.currMediaId param:@(AUDIO_INTERRUPTION_BEGAN)];
+            }
+            
+        } else {
+            NSLog(@"Interruption ended!");
+            
+            if (self.currMediaId) {
+                [self onStatus:MEDIA_STATE mediaId:self.currMediaId param:@(AUDIO_INTERRUPTION_ENDED)];
+            }
+        }
     }
 }
 

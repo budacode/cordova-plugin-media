@@ -64,6 +64,10 @@ Media.MEDIA_PAUSED = 3;
 Media.MEDIA_STOPPED = 4;
 Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
 
+// iOS AudioSession interuption messages
+Media.AUDIO_INTERRUPTION_BEGAN = 20;
+Media.ADUIO_INTERRUPTION_ENDED = 30;
+
 // "static" function to return existing objs.
 Media.get = function(id) {
     return mediaObjects[id];
